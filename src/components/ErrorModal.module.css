@@ -1,0 +1,34 @@
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+}
+
+.modal {
+  height: 350px;
+
+  width: 70%;
+  z-index: 100;
+  overflow: hidden;
+  background-color: #add8e6;
+  border-radius: 12px;
+  display: flex;
+  margin: auto;
+  justify-content: center;
+}
+
+.modal button {
+  width: 80%;
+}
+
+.modal section {
+  width: 100%;
+
+  margin: auto;
+}

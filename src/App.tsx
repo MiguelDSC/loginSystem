@@ -1,69 +1,36 @@
-import { ChangeEvent, useState } from "react";
-import reactLogo from "./assets/react.svg";
+import { useEffect, useState } from "react";
 import "./App.css";
-
-type userType = {
-  username: string;
-  password: string;
-};
-
-const loginUser = async (user: userType) => {
-  console.log(user);
-
-  const response = await fetch("http://localhost:3300/login", {
-    method: "POST",
-    headers: { "Content-type": "application/json; charset=UTF-8" },
-
-    body: JSON.stringify({
-      username: user.username,
-      password: user.password,
-    }),
-  });
-
-  if (!response.ok) {
-    console.log("incorrect details");
-    return;
-  }
-
-  console.log("user logged in!");
-};
+import Login from "./components/Login";
 
 function App() {
-  const [enteredUsername, setEnteredUsername] = useState("");
-  const [enteredPassword, setEnteredPassword] = useState("");
-  const submitHandler = (e: ChangeEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const user = {
-      username: enteredUsername,
-      password: enteredPassword,
-    };
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    setEnteredUsername("");
-    setEnteredPassword("");
-    loginUser(user);
+  useEffect(() => {
+    if (localStorage.getItem("isLoggedIn") === "1") {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  const logouthandler = () => {
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("username");
+    setIsLoggedIn(false);
   };
 
   return (
     <div className="App">
-      <form onSubmit={submitHandler}>
-        <input
-          type="text"
-          placeholder="enter username"
-          onChange={(e) => {
-            setEnteredUsername(e.target.value);
-          }}
-          value={enteredUsername}
-        />
-        <input
-          type="password"
-          placeholder="enter password"
-          value={enteredPassword}
-          onChange={(e) => {
-            setEnteredPassword(e.target.value);
+      {!isLoggedIn ? (
+        <Login
+          onLogin={(data) => {
+            setIsLoggedIn(data);
           }}
         />
-        <button>login now</button>
-      </form>
+      ) : (
+        <>
+          <h1>Welcome! {localStorage.getItem("username")}</h1>
+          <button onClick={logouthandler}>Logout</button>
+        </>
+      )}
     </div>
   );
 }

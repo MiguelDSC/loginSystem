@@ -1,0 +1,105 @@
+form {
+  width: 200px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  border: 1x solid blue;
+  border-radius: 12px;
+  background-color: lightblue;
+  justify-content: center;
+  color: black;
+  width: 500px;
+  height: 400px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+form input {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+form button {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10px;
+}
+
+.center {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: auto;
+}
+
+.form-middle {
+  margin-top: 15px;
+}
+
+input {
+  height: 80px;
+  border: none;
+  line-height: 20px;
+  background-color: #f2f2f2;
+  text-indent: 20px;
+}
+
+form p {
+  color: gray;
+}
+
+button {
+  height: 60px;
+}
+
+span {
+  color: #198754;
+}
+
+form {
+  background-color: #add8e6;
+  width: 500px;
+  height: 400px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+.center {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: auto;
+}
+
+.form-middle {
+  margin-top: 15px;
+}
+
+input {
+  height: 80px;
+  border: none;
+  line-height: 20px;
+  background-color: #f2f2f2;
+  text-indent: 20px;
+  color: black;
+}
+
+form p {
+  color: gray;
+}
+
+button {
+  height: 60px;
+}
+
+span {
+  color: #198754;
+}
