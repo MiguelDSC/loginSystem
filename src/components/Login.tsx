@@ -84,9 +84,9 @@ function Login(props: LoginProps) {
           <button className={`btn btn-success ${styles["form-middle"]}`}>
             LOGIN
           </button>
-          {/* <p className={styles["form-middle"]}>
+          <p className={styles["form-middle"]}>
             Not registerd? <span>Create an account</span>
-          </p> */}
+          </p>
         </div>
       </form>
     </div>

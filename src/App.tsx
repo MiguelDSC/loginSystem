@@ -11,7 +11,7 @@ function App() {
     }
   }, []);
 
-  const logouthandler = () => {
+  const logoutHandler = () => {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("username");
     setIsLoggedIn(false);
@@ -28,7 +28,7 @@ function App() {
       ) : (
         <>
           <h1>Welcome! {localStorage.getItem("username")}</h1>
-          <button onClick={logouthandler}>Logout</button>
+          <button onClick={logoutHandler}>Logout</button>
         </>
       )}
     </div>
