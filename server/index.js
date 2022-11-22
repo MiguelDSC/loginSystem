@@ -3,6 +3,7 @@ import mysql from "mysql2";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import cors from "cors";
+import bcrypt from "bcrypt";
 
 dotenv.config();
 
@@ -11,7 +12,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const PORT = process.env.PORT || 3500;
+const PORT = process.env.VITE_PORT || 3500;
 
 const con = mysql.createConnection(process.env.DATABASE_URL);
 
@@ -29,20 +30,51 @@ app.get("/users", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  console.log("incoming details: ", req.body);
-  const username = req.body.username;
-  const password = req.body.password;
   con.query(
-    `SELECT * FROM user WHERE user.username = '${username}' AND user.password = '${password}'`,
-    (err, result) => {
+    `SELECT * FROM user WHERE user.username = "${req.body.username}"`,
+    async (err, result) => {
       if (err) throw err;
       if (result.length === 0) {
         res.sendStatus(404);
         return;
       }
-      res.sendStatus(200);
+
+      try {
+        if (await bcrypt.compare(req.body.password, result[0].password)) {
+          res.sendStatus(200);
+          return;
+        }
+      } catch {
+        res.sendStatus(500);
+      }
     }
   );
+});
+
+app.post("/register", async (req, res) => {
+  try {
+    const salt = await bcrypt.genSaltSync();
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+
+    const newUser = {
+      username: req.body.username,
+      password: hashedPassword,
+    };
+
+    con.query(
+      `INSERT INTO user (username, password) VALUES ('${newUser.username}', '${newUser.password}')`,
+      (err, result) => {
+        if (err) throw err;
+        if (result.length === 0) {
+          res.sendStatus(500);
+          return;
+        }
+        res.sendStatus(201);
+      }
+    );
+  } catch (e) {
+    res.sendStatus(500);
+  }
 });
 
 app.listen(PORT, () => {

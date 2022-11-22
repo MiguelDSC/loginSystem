@@ -9,8 +9,6 @@ interface ErrorModalProps {
 
 function ErrorModal(props: ErrorModalProps) {
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    console.log(e.target, e.currentTarget);
-
     if (e.target === e.currentTarget) props.onCloseModal();
   };
   return (

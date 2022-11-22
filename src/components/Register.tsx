@@ -2,13 +2,13 @@ import React, { ChangeEvent, useState } from "react";
 import styles from "./Login.module.css";
 import ErrorModal from "./ErrorModal";
 import { loginUser, userType } from "../services/LoginService";
+import { registerUser } from "../services/RegisterService";
 
 interface LoginProps {
-  onLogin: (data: boolean) => void;
   isRegisterd: (data: boolean) => void;
 }
 
-function Login(props: LoginProps) {
+function Register(props: LoginProps) {
   const [enteredUsername, setEnteredUsername] = useState("");
   const [enteredPassword, setEnteredPassword] = useState("");
   const [error, setError] = useState({
@@ -34,16 +34,16 @@ function Login(props: LoginProps) {
       password: enteredPassword,
     };
 
-    const userExists = await loginUser(user);
-    if (!userExists) {
-      setError({
-        title: "User not found",
-        message: "No user has been found with given input, try again",
-      });
-    }
+    const newUser = await registerUser(user);
+    // if (!userExists) {
+    //   setError({
+    //     title: "User not found",
+    //     message: "No user has been found with given input, try again",
+    //   });
+    // }
 
-    props.onLogin(userExists);
-    localStorage.setItem("isLoggedIn", "1");
+    props.isRegisterd(true);
+    // localStorage.setItem("isLoggedIn", "1");
   };
 
   return (
@@ -83,12 +83,16 @@ function Login(props: LoginProps) {
             }}
           />
           <button className={`btn btn-success ${styles["form-middle"]}`}>
-            LOGIN
+            Register
           </button>
           <p className={styles["form-middle"]}>
-            Not registerd?
-            <span onClick={() => props.isRegisterd(false)}>
-              Create an account
+            Already have an account?{" "}
+            <span
+              onClick={() => {
+                props.isRegisterd(true);
+              }}
+            >
+              Login
             </span>
           </p>
         </div>
@@ -97,4 +101,4 @@ function Login(props: LoginProps) {
   );
 }
 
-export default Login;
+export default Register;
