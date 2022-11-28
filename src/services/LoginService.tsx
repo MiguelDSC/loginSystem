@@ -4,8 +4,6 @@ export type userType = {
 };
 
 export const loginUser = async (user: userType) => {
-  console.log(user);
-
   const response = await fetch(
     `http://localhost:${import.meta.env.VITE_PORT}/login`,
     {
