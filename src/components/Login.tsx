@@ -2,10 +2,10 @@ import React, { ChangeEvent, useState } from "react";
 import styles from "./Login.module.css";
 import ErrorModal from "./ErrorModal";
 import { loginUser, userType } from "../services/LoginService";
+import { Link } from "react-router-dom";
 
 interface LoginProps {
   onLogin: (data: boolean) => void;
-  isRegisterd: (data: boolean) => void;
 }
 
 function Login(props: LoginProps) {
@@ -87,8 +87,8 @@ function Login(props: LoginProps) {
           </button>
           <p className={styles["form-middle"]}>
             Not registerd?
-            <span onClick={() => props.isRegisterd(false)}>
-              Create an account
+            <span>
+              <Link to={"/register"}>Create an account</Link>
             </span>
           </p>
         </div>

@@ -3,18 +3,16 @@ import styles from "./Login.module.css";
 import ErrorModal from "./ErrorModal";
 import { loginUser, userType } from "../services/LoginService";
 import { registerUser } from "../services/RegisterService";
+import { Link, useNavigate } from "react-router-dom";
 
-interface LoginProps {
-  isRegisterd: (data: boolean) => void;
-}
-
-function Register(props: LoginProps) {
+function Register() {
   const [enteredUsername, setEnteredUsername] = useState("");
   const [enteredPassword, setEnteredPassword] = useState("");
   const [error, setError] = useState({
     message: "",
     title: "",
   });
+  const navigate = useNavigate();
 
   const submitHandler = async (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -42,8 +40,10 @@ function Register(props: LoginProps) {
     //   });
     // }
 
-    props.isRegisterd(true);
+    // props.isRegisterd(true);
     // localStorage.setItem("isLoggedIn", "1");
+
+    navigate("/login");
   };
 
   return (
@@ -86,14 +86,7 @@ function Register(props: LoginProps) {
             Register
           </button>
           <p className={styles["form-middle"]}>
-            Already have an account?{" "}
-            <span
-              onClick={() => {
-                props.isRegisterd(true);
-              }}
-            >
-              Login
-            </span>
+            Already have an account? <Link to={"/login"}>Login</Link>
           </p>
         </div>
       </form>

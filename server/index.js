@@ -23,7 +23,6 @@ con.connect((err) => {
 });
 
 app.get("/users", (req, res) => {
-  // console.log("recieved request for user list");
   const result = con.query("SELECT * FROM user");
   if (err) throw err;
   res.send(result);
@@ -96,10 +95,8 @@ const checkIfUsernameIsTaken = async (name) => {
 
     console.log(result.length);
     if (result[0].length === 0) {
-      console.log("not taken");
       return false;
     }
-    console.log("taken");
     return true;
   } catch (e) {
     throw e;

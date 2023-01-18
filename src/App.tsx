@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import Login from "./components/Login";
 import Register from "./components/Register";
+import { Route, Routes } from "react-router-dom";
+import Home from "./components/Home";
+import Test from "./components/Test";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [hasAccount, setHasAccount] = useState(true);
 
   useEffect(() => {
     if (localStorage.getItem("isLoggedIn") === "1") {
@@ -13,35 +15,30 @@ function App() {
     }
   }, []);
 
-  const logoutHandler = () => {
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("username");
-    setIsLoggedIn(false);
-  };
-
-  let content = (
-    <Login
-      onLogin={(data) => {
-        setIsLoggedIn(data);
-      }}
-      isRegisterd={(data) => setHasAccount(data)}
-    />
-  );
-
-  if (!hasAccount) {
-    content = <Register isRegisterd={(data) => setHasAccount(data)} />;
-  }
+  // const logoutHandler = () => {
+  //   localStorage.removeItem("isLoggedIn");
+  //   localStorage.removeItem("username");
+  //   setIsLoggedIn(false);
+  // };
 
   return (
     <div className="App">
-      {isLoggedIn ? (
-        <>
-          <h1>Welcome! {localStorage.getItem("username")}</h1>
-          <button onClick={logoutHandler}>Logout</button>
-        </>
-      ) : (
-        content
-      )}
+      <Routes>
+        <Route path="/" element={<Home />} />
+
+        <Route
+          path="/login"
+          element={
+            <Login
+              onLogin={(data) => {
+                setIsLoggedIn(data);
+              }}
+            />
+          }
+        />
+        <Route path="/register" element={<Register />} />
+        <Route path="*" element={<h1>Unknown Url</h1>} />
+      </Routes>
     </div>
   );
 }
