@@ -1,17 +1,27 @@
 import express from "express";
 import mysql from "mysql2/promise";
 import dotenv from "dotenv";
-import bodyParser from "body-parser";
 import cors from "cors";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+
+const posts = [
+  {
+    username: "test",
+    title: "POST 1",
+  },
+
+  {
+    username: "miguel",
+    title: "POST 2",
+  },
+];
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(express.json());
 
 const PORT = process.env.VITE_PORT || 3500;
 
@@ -22,42 +32,78 @@ con.connect((err) => {
   console.log("connected to database!");
 });
 
-app.get("/users", (req, res) => {
-  const result = con.query("SELECT * FROM user");
-  if (err) throw err;
-  res.send(result);
+app.get("/posts", authenticateToken, async (req, res) => {
+  res.json(posts.filter((post) => post.username === req.user.username));
+});
+
+let refreshTokens = [];
+
+app.post("/token", (req, res) => {
+  const refreshToken = req.body.token;
+
+  if (refreshToken == null) return res.sendStatus(401);
+  if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
+
+  jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+
+    const accessToken = generateAccessToken({ username: user.username });
+    res.json({ accessToken: accessToken });
+  });
+});
+
+app.delete("/logout", (req, res) => {
+  refreshTokens = refreshTokens.filter((token) => token !== req.body.token);
+  res.sendStatus(204);
 });
 
 app.post("/login", async (req, res) => {
   const result = await con.query(
     `SELECT * FROM user WHERE user.username = "${req.body.username}"`
   );
-  if (result[0].length === 0) {
-    res.sendStatus(404);
-    return;
-  }
+  if (result[0].length === 0) res.sendStatus(404);
 
   try {
-    if (await bcrypt.compare(req.body.password, result[0][0].password)) {
-      res.sendStatus(200);
+    const foundUser = result[0][0];
+    if (await bcrypt.compare(req.body.password, foundUser.password)) {
       const username = req.body.username;
 
       const user = {
-        name: username,
+        username: username,
       };
 
-      const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
-      console.log(accessToken);
+      const accessToken = generateAccessToken(user);
+      const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
+      refreshTokens.push(refreshToken);
 
-      return;
+      console.log(refreshTokens);
+
+      res.json({ accessToken: accessToken, refreshToken: refreshToken });
     } else {
       res.sendStatus(404);
-      return;
     }
   } catch (e) {
     throw e;
   }
 });
+
+function generateAccessToken(user) {
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "20s" });
+}
+
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+
+    req.user = user;
+    next();
+  });
+}
 
 app.post("/register", async (req, res) => {
   if (await checkIfUsernameIsTaken(req.body.username)) {
@@ -93,7 +139,7 @@ const checkIfUsernameIsTaken = async (name) => {
       `SELECT * FROM user WHERE user.username = "${name}"`
     );
 
-    console.log(result.length);
+    // console.log(result.length);
     if (result[0].length === 0) {
       return false;
     }
