@@ -1,20 +1,18 @@
 import React, { ChangeEvent, useState } from "react";
-import styles from "./Login.module.css";
-import ErrorModal from "./ErrorModal";
-import { loginUser, userType } from "../services/LoginService";
-import { Link } from "react-router-dom";
+import styles from "../Login/Login.module.css";
+import ErrorModal from "../Modal/ErrorModal";
+import { registerUser } from "../../services/LoginService";
+import { Link, useNavigate } from "react-router-dom";
+import { userType } from "../../types/UserType";
 
-interface LoginProps {
-  onLogin: (data: boolean) => void;
-}
-
-function Login(props: LoginProps) {
+function Register() {
   const [enteredUsername, setEnteredUsername] = useState("");
   const [enteredPassword, setEnteredPassword] = useState("");
   const [error, setError] = useState({
     message: "",
     title: "",
   });
+  const navigate = useNavigate();
 
   const submitHandler = async (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,16 +32,19 @@ function Login(props: LoginProps) {
       password: enteredPassword,
     };
 
-    const userExists = await loginUser(user);
-    if (!userExists) {
+    const registrationResult = await registerUser(user);
+
+    if (registrationResult !== "succes") {
       setError({
-        title: "User not found",
-        message: "No user has been found with given input, try again",
+        message: `username "${user.username}" has already been taken, try with another`,
+        title: "username taken",
       });
+      return;
     }
 
-    props.onLogin(userExists);
-    localStorage.setItem("isLoggedIn", "1");
+    alert(`user ${user.username} has been registerd!`);
+
+    navigate("/login");
   };
 
   return (
@@ -83,13 +84,10 @@ function Login(props: LoginProps) {
             }}
           />
           <button className={`btn btn-success ${styles["form-middle"]}`}>
-            LOGIN
+            Register
           </button>
           <p className={styles["form-middle"]}>
-            Not registerd?
-            <span>
-              <Link to={"/register"}>Create an account</Link>
-            </span>
+            Already have an account? <Link to={"/login"}>Login</Link>
           </p>
         </div>
       </form>
@@ -97,4 +95,4 @@ function Login(props: LoginProps) {
   );
 }
 
-export default Login;
+export default Register;

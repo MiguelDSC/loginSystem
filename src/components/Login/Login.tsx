@@ -1,18 +1,21 @@
 import React, { ChangeEvent, useState } from "react";
 import styles from "./Login.module.css";
-import ErrorModal from "./ErrorModal";
-import { loginUser, userType } from "../services/LoginService";
-import { registerUser } from "../services/RegisterService";
-import { Link, useNavigate } from "react-router-dom";
+import ErrorModal from "../Modal/ErrorModal";
+import { loginUser } from "../../services/LoginService";
+import { Link } from "react-router-dom";
+import { userType } from "../../types/UserType";
 
-function Register() {
+interface LoginProps {
+  onLogin: (data: boolean) => void;
+}
+
+function Login(props: LoginProps) {
   const [enteredUsername, setEnteredUsername] = useState("");
   const [enteredPassword, setEnteredPassword] = useState("");
   const [error, setError] = useState({
     message: "",
     title: "",
   });
-  const navigate = useNavigate();
 
   const submitHandler = async (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,18 +35,16 @@ function Register() {
       password: enteredPassword,
     };
 
-    const newUser = await registerUser(user);
-    // if (!userExists) {
-    //   setError({
-    //     title: "User not found",
-    //     message: "No user has been found with given input, try again",
-    //   });
-    // }
+    const userExists = await loginUser(user);
+    if (!userExists) {
+      setError({
+        title: "User not found",
+        message: "No user has been found with given input, try again",
+      });
+    }
 
-    // props.isRegisterd(true);
-    // localStorage.setItem("isLoggedIn", "1");
-
-    navigate("/login");
+    // props.onLogin(userExists);
+    localStorage.setItem("isLoggedIn", "1");
   };
 
   return (
@@ -83,10 +84,13 @@ function Register() {
             }}
           />
           <button className={`btn btn-success ${styles["form-middle"]}`}>
-            Register
+            LOGIN
           </button>
           <p className={styles["form-middle"]}>
-            Already have an account? <Link to={"/login"}>Login</Link>
+            Not registerd?
+            <span>
+              <Link to={"/register"}>Create an account</Link>
+            </span>
           </p>
         </div>
       </form>
@@ -94,4 +98,4 @@ function Register() {
   );
 }
 
-export default Register;
+export default Login;

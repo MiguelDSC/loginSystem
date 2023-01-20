@@ -25,7 +25,12 @@ app.use(express.json());
 
 const PORT = process.env.VITE_PORT || 3500;
 
-const con = await mysql.createConnection(process.env.DATABASE_URL);
+const con = await mysql.createConnection({
+  host: "localhost",
+  database: "loginSystem",
+  user: "root",
+  password: "",
+});
 
 con.connect((err) => {
   if (err) throw err;
@@ -59,7 +64,7 @@ app.delete("/logout", (req, res) => {
 
 app.post("/login", async (req, res) => {
   const result = await con.query(
-    `SELECT * FROM user WHERE user.username = "${req.body.username}"`
+    `SELECT * FROM User WHERE User.username = "${req.body.username}"`
   );
   if (result[0].length === 0) res.sendStatus(404);
 
@@ -76,7 +81,10 @@ app.post("/login", async (req, res) => {
       const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
       refreshTokens.push(refreshToken);
 
-      console.log(refreshTokens);
+      res.setHeader("Set-Cookie", [
+        `accessToken=${accessToken}; HttpOnly; Max-Age=${60000 * 15};`,
+        `refreshToken=${refreshTokens}; HttpOnly; Max-Age=${60000 * 15};`,
+      ]);
 
       res.json({ accessToken: accessToken, refreshToken: refreshToken });
     } else {
@@ -88,7 +96,7 @@ app.post("/login", async (req, res) => {
 });
 
 function generateAccessToken(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "20s" });
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "60s" });
 }
 
 function authenticateToken(req, res, next) {
@@ -121,7 +129,7 @@ app.post("/register", async (req, res) => {
     };
 
     const result = await con.query(
-      `INSERT INTO user (username, password) VALUES ('${newUser.username}', '${newUser.password}')`
+      `INSERT INTO User (username, password) VALUES ('${newUser.username}', '${newUser.password}')`
     );
     if (result[0].length === 0) {
       res.sendStatus(500);
@@ -139,10 +147,8 @@ const checkIfUsernameIsTaken = async (name) => {
       `SELECT * FROM user WHERE user.username = "${name}"`
     );
 
-    // console.log(result.length);
-    if (result[0].length === 0) {
-      return false;
-    }
+    if (result[0].length === 0) return false;
+
     return true;
   } catch (e) {
     throw e;

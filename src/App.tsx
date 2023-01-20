@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import Login from "./components/Login";
-import Register from "./components/Register";
+import Login from "./components/Login/Login";
+import Register from "./components/Register/Register";
 import { Route, Routes } from "react-router-dom";
 import Home from "./components/Home";
-import Test from "./components/Test";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
