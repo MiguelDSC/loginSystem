@@ -1,9 +1,10 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useContext, useState } from "react";
 import styles from "./Login.module.css";
 import ErrorModal from "../Modal/ErrorModal";
 import { loginUser } from "../../services/LoginService";
 import { Link } from "react-router-dom";
 import { userType } from "../../types/UserType";
+import AuthContext from "../../context/AuthProvider";
 
 interface LoginProps {
   onLogin: (data: boolean) => void;

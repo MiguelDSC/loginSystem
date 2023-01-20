@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 const posts = [
   {
